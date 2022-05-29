@@ -20,6 +20,7 @@ const Header = () => {
   };
 
 
+
   return (
     <header>
         <Navbar bg="dark" variant='dark' expand="lg" collapseOnSelect>
@@ -47,7 +48,7 @@ const Header = () => {
                           <NavDropdown.Item as='div' onClick={logoutHandler}>Logout</NavDropdown.Item>
                       </NavDropdown>
                    ) : (
-                    <LinkContainer to="/login">
+                    <LinkContainer to="/login"  className='d-flex mb-1  align-items-center'>
                     <div style={{color: '#fff'}}><i className='fas fa-user'></i> Sign In</div>
                     </LinkContainer>
                    )

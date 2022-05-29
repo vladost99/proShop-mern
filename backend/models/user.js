@@ -19,7 +19,9 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         required: true,
         default: false
-    }
+    },
+    isActivated: {type: Boolean, default: false},
+    activationLink: {type: String},
 }, {timestamps: true});
 
 

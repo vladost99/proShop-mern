@@ -1,4 +1,4 @@
-import { makeAutoObservable, toJS } from 'mobx';
+import { makeAutoObservable} from 'mobx';
 import { clearAnyTimeout } from 'utils/clearAnyTimeout';
 import UserService from 'services/userService';
 import ErrorService from 'services/errorService';
@@ -9,7 +9,7 @@ const LOCALSTORAGE_USERINFO = 'userInfo';
 
 class User {
     
-    userInfo = StorageService.receive(LOCALSTORAGE_USERINFO) ? StorageService.receive(LOCALSTORAGE_USERINFO)  :  null;
+    userInfo = null;
     loading = false;
     error = '';
     user = null;
@@ -17,6 +17,7 @@ class User {
     userList = [];
     message = '';
     selectedUser = null;
+    token = StorageService.receive('token') ? StorageService.receive('token') : null;
 
     constructor(rootStore) {
         makeAutoObservable(this, { rootStore: false })
@@ -33,8 +34,10 @@ class User {
         this.clearError();
         try {
             let response = await UserService.login(data);
-            this.userInfo = response.data;
-            StorageService.save(LOCALSTORAGE_USERINFO, this.userInfo);
+            this.userInfo = {...response.data.user};
+            this.user = {...response.data.user};
+            this.token = response.data.accessToken;
+            StorageService.save('token', response.data.accessToken);
         }
         catch(error) {
             this.error = ErrorService.receiveMessage(error);
@@ -45,8 +48,31 @@ class User {
         }
     }
 
+    async checkAuth() {
+        this.loading = true;
+        this.clearError();
+        try {
+            let response = await UserService.refresh();
+            this.userInfo = {...response.data.user};
+            this.user = {...response.data.user};
+            this.token = response.data.accessToken;
+            StorageService.save('token', response.data.accessToken);
+        }
+        catch(error) {
+            this.user = null;
+            this.userInfo = null;
+            StorageService.remove(LOCALSTORAGE_USERINFO);
+            StorageService.remove('token');
+            
+        }
+        finally {
+            this.loading = false
+        }
+    }
+
     logout() {
-        StorageService.remove(LOCALSTORAGE_USERINFO);
+        StorageService.remove('token');
+        UserService.logout();
         this.userInfo = null;
         this.user = null;
         this.userList = [];
@@ -58,8 +84,9 @@ class User {
         this.error = '';
         try {
             let response = await UserService.register(data);
-            this.userInfo = response.data;
-            StorageService.save(LOCALSTORAGE_USERINFO, this.userInfo);
+            this.userInfo = {...response.data.user};
+            this.token = response.data.accessToken;
+            StorageService.save('token', response.data.accessToken);
         }
         catch(error) {
             this.error = ErrorService.receiveMessage(error);

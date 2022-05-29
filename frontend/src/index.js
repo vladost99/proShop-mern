@@ -17,12 +17,23 @@ injectStores({
 
 export const Context = createContext({store});
 
-ReactDOM.render(
-    <Context.Provider value={{store}}>
-        <App />
-    </Context.Provider>,
-document.getElementById('root')
-);
+async function init() {
+    try {
+        await store.userStore.checkAuth();
+    }
+    finally {
+        ReactDOM.render(
+            <Context.Provider value={{store}}>
+                <App />
+            </Context.Provider>,
+        document.getElementById('root')
+        );
+    }
+}
+
+
+init();
+
 
 
 reportWebVitals();

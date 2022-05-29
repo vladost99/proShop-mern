@@ -3,6 +3,8 @@ const asyncHandler = require('express-async-handler');
 const TokenService = require('../services/TokenService');
 const UserDto = require('../dtos/user-dto');
 
+
+//rewrite
 const login = asyncHandler(async (req, res) => {
     const {email, password} = req.body;
 
@@ -24,7 +26,7 @@ const login = asyncHandler(async (req, res) => {
     
 
 });
-
+//rewrite
 const getUserProfile = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
 
@@ -37,7 +39,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 });
 
 
-
+//rewrite
 const updateUserProfile = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
 
@@ -58,7 +60,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     }
 });
 
-
+//rewrite
 const registerUser = asyncHandler(async (req, res) => {
     const data = req.body;
 
@@ -87,11 +89,14 @@ const registerUser = asyncHandler(async (req, res) => {
     
 });
 
+
+
+//rewrite
 const getAllUser = asyncHandler(async (req, res) => {
     const users = await User.find({});
     res.json(users);
 })
-
+//rewrite
 const deleteUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
 
@@ -104,7 +109,7 @@ const deleteUser = asyncHandler(async (req, res) => {
     }
 
 });
-
+//rewrite
 const getUseById = asyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
     
@@ -117,6 +122,7 @@ const getUseById = asyncHandler(async (req, res) => {
     }
 });
 
+//rewrite
 const updateUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
 

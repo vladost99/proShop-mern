@@ -1,12 +1,5 @@
-import axios from "axios"
-import StorageService from "./storageService";
+import axios  from "../http/index";
 
-const config = {
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${StorageService.receive('userInfo')?.token}`
-    }
-}
 
 
 export default class ProductService {
@@ -23,19 +16,19 @@ export default class ProductService {
        return axios.get(`/api/products/${id}/detail`);
    }
    static async deleteProduct(id) {
-       return axios.delete(`/api/products/${id}`, config);
+       return axios.delete(`/api/products/${id}`);
    }
 
    static async create() {
-       return axios.post(`/api/products/create`,{},config);
+       return axios.post(`/api/products/create`,{});
    }
 
    static async update(id, data) {
-       return axios.put(`/api/products/${id}`, data, config);
+       return axios.put(`/api/products/${id}`, data);
    }
 
    static async createReview(id, data) {
-       return axios.post(`/api/products/${id}/reviews`, data, config);
+       return axios.post(`/api/products/${id}/reviews`, data);
    }
    
 }

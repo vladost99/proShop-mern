@@ -1,26 +1,20 @@
 
-import axios  from 'axios';
-import StorageService from './storageService';
+import axios  from "../http/index";
 
-const config = {
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${StorageService.receive('userInfo')?.token}`
-    }
-}
+
 
 export default class OrderService {
     
     static async createOrder(data) {
-        return axios.post(`/api/orders`, data, config);
+        return axios.post(`/api/orders`, data);
     }
 
     static async getOrderById(id) {
-        return axios.get(`/api/orders/${id}`, config);
+        return axios.get(`/api/orders/${id}`);
     }
 
     static async orderPaid(id, paymentResult) {
-        return axios.put(`/api/orders/${id}/pay`, paymentResult, config);
+        return axios.put(`/api/orders/${id}/pay`, paymentResult);
     }
 
     static async getPayPalConfig() {
@@ -28,15 +22,15 @@ export default class OrderService {
     }
 
     static async getMyOrders() {
-        return axios.get('/api/orders/myorders', config);
+        return axios.get('/api/orders/myorders');
     }
 
     static async getAllOrders() {
-        return axios.get('/api/orders', config);
+        return axios.get('/api/orders');
     }
 
     static async orderDeliveredUpdate(id, data) {
-        return axios.put(`/api/orders/${id}/delivered`,data, config);
+        return axios.put(`/api/orders/${id}/delivered`,data);
     }
 
 }
