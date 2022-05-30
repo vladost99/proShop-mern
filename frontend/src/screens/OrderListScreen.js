@@ -59,7 +59,7 @@ const OrderListScreen = () => {
                 )}
               </td>
               <td className='d-flex justify-content-center'>
-                <LinkContainer to={`/admin/order/${order._id}/edit`}>
+                <LinkContainer to={`/orders/${order._id}`}>
                   <Button variant='light' className='btn-sm'>
                      Details
                   </Button>

@@ -3,7 +3,7 @@ const router = new Router();
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
 const UserContoroller = require('../controllers/userController');
-const AdminController = require('../controllers/adminComtroller');
+const AdminController = require('../controllers/adminController');
 
 
 

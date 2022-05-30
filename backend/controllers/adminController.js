@@ -40,6 +40,26 @@ class AdminController {
             next(e);
         }
     }
+
+    async getAllOrders(req, res, next) {
+        try {
+            let orders = await AdminService.getAllOrders();
+            res.json(orders);
+        }
+        catch(e) {
+            next(e)
+        }
+    }
+
+    async updateOrderToDelivered(req,res, next) {
+        try {
+            let updateOrder = await AdminService.updateOrderToDelivered(req);
+            res.json(updateOrder);
+        }
+        catch(e) {
+            next(e);
+        }
+    }
 }
 
 

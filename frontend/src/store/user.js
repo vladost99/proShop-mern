@@ -24,14 +24,10 @@ class User {
         this.rootStore = rootStore;
     }
 
-    clearError() {
-        this.error = '';
-    }
-
 
     async login(data) {
         this.loading = true;
-        this.clearError();
+        this.error = ''
         try {
             let response = await UserService.login(data);
             this.userInfo = {...response.data.user};
@@ -41,7 +37,7 @@ class User {
         }
         catch(error) {
             this.error = ErrorService.receiveMessage(error);
-            clearAnyTimeout(1500, this.clearError);
+            clearAnyTimeout(1500, () => {this.error = ''});
         }
         finally {
             this.loading = false
@@ -50,7 +46,7 @@ class User {
 
     async checkAuth() {
         this.loading = true;
-        this.clearError();
+        this.error = '';
         try {
             let response = await UserService.refresh();
             this.userInfo = {...response.data.user};
@@ -90,7 +86,7 @@ class User {
         }
         catch(error) {
             this.error = ErrorService.receiveMessage(error);
-            clearAnyTimeout(1500, this.clearError);
+            clearAnyTimeout(1500, () => {this.error = ''});
         }
         finally {
             this.loading = false
@@ -108,7 +104,7 @@ class User {
     }
     catch(error) {
         this.error = ErrorService.receiveMessage(error);
-        clearAnyTimeout(1500, this.clearError);
+        clearAnyTimeout(1500, () => {this.error = ''});
     }
     finally {
         this.loading = false
@@ -130,7 +126,7 @@ class User {
     catch(error) {
         this.success = false;
         this.error = ErrorService.receiveMessage(error);
-        clearAnyTimeout(1500, this.clearError);
+        clearAnyTimeout(1500, () => {this.error = ''});
     }
     finally {
         clearAnyTimeout(1500, () => this.success = null);
@@ -150,7 +146,7 @@ class User {
     }
     catch(error) {
         this.error = ErrorService.receiveMessage(error);
-        clearAnyTimeout(1500, this.clearError);
+        clearAnyTimeout(1500, () => {this.error = ''});
     }
     finally {
         this.loading = false;
@@ -169,7 +165,7 @@ class User {
     }
     catch(error) {
         this.error = ErrorService.receiveMessage(error);
-        clearAnyTimeout(1500, this.clearError);
+        clearAnyTimeout(1500, () => {this.error = ''});
     }
     finally {
         this.loading = false;
@@ -188,7 +184,7 @@ class User {
     }
     catch(error) {
         this.error = ErrorService.receiveMessage(error);
-        clearAnyTimeout(1500, this.clearError);
+        clearAnyTimeout(1500, () => {this.error = ''});
     }
     finally {
         this.loading = false;
@@ -205,7 +201,7 @@ class User {
     }
     catch(error) {
         this.error = ErrorService.receiveMessage(error);
-        clearAnyTimeout(1500, this.clearError);
+        clearAnyTimeout(1500, () => {this.error = ''});
     }
     finally {
         this.loading = false;
@@ -215,8 +211,5 @@ class User {
 }
 
 
-//const user = new User();
-
-//injectStores({user});
 
 export default User;

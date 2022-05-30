@@ -29,12 +29,12 @@ class UserService {
         if (candidate) {
             throw ApiError.BadRequest(`A user with an email ${email} already exists`)
         }
-        const activationLink = uuid.v4(); // v34fa-asfasf-142saf-sa-asf
+        const activationLink = uuid.v4();
 
         const user = await User.create({email, password, activationLink, name});
-        //await MailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
+       // await MailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
 
-        const userDto = new UserDto(user); // id, email, isActivated
+        const userDto = new UserDto(user);
         const tokens = TokenService.generateTokens({...userDto});
         await TokenService.saveToken(userDto.id, tokens.refreshToken);
 

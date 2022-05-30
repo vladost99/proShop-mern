@@ -1,7 +1,6 @@
 import useInput from 'hooks/useInput'
 import { observer } from 'mobx-react-lite'
 import React, {useEffect} from 'react'
-//import userStore from 'store/user'
 import FormContainer from 'components/FormContainer'
 import Message from 'components/Message'
 import Loader from 'components/Loader'

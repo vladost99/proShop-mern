@@ -1,5 +1,7 @@
 const User = require('../models/user');
+const Order = require('../models/order');
 const ApiError = require('../exception/apiError');
+const OrderError = require('../exception/orderError');
 
 class AdminService {
     
@@ -58,7 +60,35 @@ class AdminService {
                 throw ApiError.BadRequest();
             }
     }
-    
+
+    async getAllOrders() {
+      try {
+        const allOrders = await Order.find({}).populate('user', 'id name');
+        return allOrders;
+      }
+      catch(e) {
+          throw ApiError.BadRequest();
+      }
+    }
+
+    async updateOrderToDelivered(req) {
+       try {
+        const order = await Order.findById(req.params.id);
+
+        if(!order) throw OrderError.OrderNotFound()
+
+       
+        order.isDelivered = true;
+        order.deliveredAt = Date.now();
+
+        const updatedOrder = await order.save();
+        return updatedOrder;
+        
+       }
+       catch(e) {
+           throw ApiError.BadRequest();
+       }
+    }
     
 }
 
