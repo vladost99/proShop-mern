@@ -20,7 +20,7 @@ export default class ProductService {
    }
 
    static async create() {
-       return axios.post(`/api/products/create`,{});
+       return axios.post(`/api/products/create`);
    }
 
    static async update(id, data) {

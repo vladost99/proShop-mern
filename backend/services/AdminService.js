@@ -1,7 +1,10 @@
 const User = require('../models/user');
 const Order = require('../models/order');
+const Product = require('../models/product');
 const ApiError = require('../exception/apiError');
 const OrderError = require('../exception/orderError');
+const ProductError = require('../exception/productError');
+const storageService = require('../services/StorageService');
 
 class AdminService {
     
@@ -88,6 +91,65 @@ class AdminService {
        catch(e) {
            throw ApiError.BadRequest();
        }
+    }
+
+    async createProduct(req) {
+        try {
+              const createProduct = await Product.create({
+                name: 'Sample name',
+                price: 0,
+                user: req.user._id,
+                image: '/image/sample.jpg',
+                brand: 'Sample Brand',
+                category: 'Sample category',
+                countInStock: 0,
+                numReviews: 0,
+                description: 'Sample description'
+              })
+              return createProduct;
+        }
+        catch(e) {
+            throw ApiError.BadRequest();
+        }
+    }
+
+    async updateProduct(req) {
+        try {
+            const {name, price, description, image, brand, category, countInStock} = req.body;
+            const product = await Product.findById(req.params.id);
+
+            if(!product) throw ProductError.productNotFound()
+         
+            product.name = name || product.name;
+            product.price = price || product.price;
+            product.description = description || product.description;
+            product.image = image && image !== '/image/sample.jpg' ? await storageService.upload(req.params.id,image) : product.image;
+            product.brand = brand || product.brand;
+            product.category = category || product.category;
+            product.countInStock = countInStock || product.countInStock;
+
+            const updateProduct = await product.save();
+            return updateProduct;
+        }
+
+        catch(e) {
+            throw ApiError.BadRequest();
+        }
+    }
+
+    async deleteProduct(req) {
+        try {
+            const product = await Product.findById(req.params.id);
+
+            if(!product) throw ProductError.productNotFound()
+            
+            await product.remove();
+            return {message: 'Product removed'};
+                       
+        }
+        catch(e) {
+            throw ApiError.BadRequest();
+        }
     }
     
 }

@@ -60,6 +60,36 @@ class AdminController {
             next(e);
         }
     }
+
+    async createProduct(req,res, next) {
+        try {
+            const createProduct = await AdminService.createProduct(req);
+            res.json(createProduct);
+        }
+        catch(e) {
+            next(e);
+        }
+    }
+
+    async updateProduct(req,res,next) {
+        try {
+            const updateProduct = await AdminService.updateProduct(req);
+            res.json(updateProduct);
+        }
+        catch(e) {
+            next(e);
+        }
+    }
+
+    async deleteProduct(req,res, next) {
+        try {
+            const deleteProduct = await AdminService.deleteProduct(req);
+            res.json(deleteProduct);
+        }
+        catch(e) {
+            next(e);
+        }
+    }
 }
 
 
