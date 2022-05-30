@@ -1,148 +1,87 @@
-const User = require('../models/user');
-const asyncHandler = require('express-async-handler');
-const TokenService = require('../services/TokenService');
-const UserDto = require('../dtos/user-dto');
+const UserService = require("../services/UserService");
+const ApiError = require('../exception/apiError');
+const {validationResult} = require('express-validator');
 
 
-//rewrite
-const login = asyncHandler(async (req, res) => {
-    const {email, password} = req.body;
 
-    const user = await User.findOne({email});
+class UserController {
 
-    if(!user) {
-        res.status(401)
-        throw new Error('There is no user with this email');
+    async login(req, res, next) {
+        try {
+            const {email, password} = req.body;
+            const userData = await UserService.login(email, password);
+            res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true});
+            return res.json(userData);
+        }
+        catch(e) {
+            next(e);
+        }
     }
 
-    const isPassEquals = await user.matchPassword(password);
 
-    if(!isPassEquals) {
-        res.status(401)
-        throw new Error('Invalid password');
-    }
-    let data = {...new UserDto(user), token: TokenService.generateToken(user._id)};
-    res.json(data);
-    
-
-});
-//rewrite
-const getUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
-
-    if(user) {
-        res.json(new UserDto(user));
-    } else {
-        res.status(404);
-        throw new Error('User not found');
-    }
-});
-
-
-//rewrite
-const updateUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
-
-    if(user) {
-       user.name = req.body.name || user.name;
-       user.email= req.body.email || user.email;
-       
-       if(req.body.password) {
-           user.password = req.body.password;
-       }
-
-       const updatedUser = await user.save();
-       res.json({...new UserDto(updatedUser), token: TokenService.generateToken(updatedUser._id)})
-
-    } else {
-        res.status(404);
-        throw new Error('User not found');
-    }
-});
-
-//rewrite
-const registerUser = asyncHandler(async (req, res) => {
-    const data = req.body;
-
-    const userExists = await User.findOne({email: data.email});
-
-    if(userExists) {
-        res.status(400)
-        throw new Error('User already exists');
+    async logout(req, res, next) {
+        try {
+            const {refreshToken} = req.cookies;
+            const token = await UserService.logout(refreshToken);
+            res.clearCookie('refreshToken');
+            return res.json(token);
+        } catch (e) {
+            next(e);
+        }
     }
 
-    const user = await User.create({
-        name: data.name,
-        email: data.email,
-        password: data.password
-    });
-
-    if(user) {
-        res.status(201).json({
-            ...new UserDto(user),
-            token: TokenService.generateToken(user._id)
-        })
-    } else {
-        res.status(400)
-        throw new Error('Invalid user data');
-    }
-    
-});
-
-
-
-//rewrite
-const getAllUser = asyncHandler(async (req, res) => {
-    const users = await User.find({});
-    res.json(users);
-})
-//rewrite
-const deleteUser = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id);
-
-    if(user) {
-        await user.remove();
-        res.json({message: 'User removed'});
-    } else {
-        res.status(404);
-        throw new Error('User not Found');
+    async registration(req, res, next) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return next(ApiError.BadRequest('Validation error', errors.array()))
+            }
+            const {email, password, name} = req.body;
+            const userData = await UserService.registration(email, password, name);
+            res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+            return res.json(userData);
+        } catch (e) {
+            next(e);
+        }
     }
 
-});
-//rewrite
-const getUseById = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id);
-    
-    if(user) {
-        res.json(user);
-    }
-    else {
-        res.status(404);
-        throw new Error('User not found');
-    }
-});
 
-//rewrite
-const updateUser = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id);
+    async refresh(req, res, next) {
+        try {
+            const {refreshToken} = req.cookies;
+            const userData = await UserService.refresh(refreshToken);
+            res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+            return res.json(userData);
+        } catch (e) {
+            next(e);
+        }
+    }
 
-    if(user) {
-        user.name = req.body.name || user.name;
-        user.email= req.body.email || user.email;
-        user.isAdmin = req.body.isAdmin || user.isAdmin;
+    async updateProfile(req,res, next) {
+        const userId = req.user._id;
         
-        const updateUser = await user.save();
-        res.json({...new UserDto(updateUser)});
+        try {
+            let updateUser = await UserService.updateProfile(userId, req.body);
+            return res.json(updateUser);
+        }
+        catch(e) {
+            next(e);
+        }
     }
-});
+    async getProfile(req,res,next) {
+        const userId = req.user._id;
 
-module.exports = {
-    login,
-    getUserProfile,
-    registerUser,
-    updateUserProfile,
-    getAllUser,
-    deleteUser,
-    updateUser,
-    getUseById
+        try {
+           const user = await UserService.getProfile(userId);
+           res.json(user);
+        }
+        catch(e) {
+            next(e);
+        }
+    }
+
 }
+
+
+
+module.exports = new UserController();
