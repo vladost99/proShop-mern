@@ -113,7 +113,7 @@ return loading ? (
              </ListGroup>
          </Col>
          <Col md={12} sm={12} lg={5}>
-             <Card>
+             <Card style={{overflow: "hidden"}}>
                  <ListGroup variant='flush'>
                      <ListGroup.Item>
                          <h2>Order Summary</h2>

@@ -17,7 +17,7 @@ import UserEditScreen from "screens/UserEditScreen";
 import ProductListScreen from "screens/ProductListScreen";
 import ProductEditScreen from "screens/ProductEditScreen";
 import OrderListScreen from "screens/OrderListScreen";
-
+import NotFound from "components/NotFound";
 
 import PrivateRoute from "components/PrivateRoute";
 import DevTools from 'mobx-react-devtools';
@@ -88,6 +88,8 @@ function App() {
               <Route path='/register' component={RegisterScreen}/>
               <Route path='/product/:id' component={ProductScreen} />
               <Route path='/cart/:id?' component={CartScreen}  />
+
+              <Route path='*' component={NotFound} />
              </Switch>
           </Container>
       </main>

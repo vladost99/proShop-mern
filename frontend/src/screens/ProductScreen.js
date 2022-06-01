@@ -5,12 +5,12 @@ import Rating from 'components/Rating'
 
 import { useParams, useHistory } from 'react-router-dom'
 import { observer } from 'mobx-react-lite'
-//import productStore from 'store/products';
 import Loader from 'components/Loader'
 import Message from 'components/Message'
 import useStore from 'hooks/useStore'
 import useInput  from 'hooks/useInput';
-import Meta from 'components/Meta'
+import Meta from 'components/Meta';
+import NotFound from 'components/NotFound';
 
 const ProductScreen = () => {
 
@@ -55,7 +55,7 @@ const ProductScreen = () => {
     }
   }, [success])
 
-  if(!product) return (<div>...Ops</div>)
+  if(!product) return <NotFound/>
 
   return (
    <>

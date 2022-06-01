@@ -45,7 +45,7 @@ const Header = () => {
                         <LinkContainer to='/profile'>
                           <NavDropdown.Item as='div'>Profile</NavDropdown.Item>
                         </LinkContainer>
-                          <NavDropdown.Item as='div' onClick={logoutHandler}>Logout</NavDropdown.Item>
+                          <NavDropdown.Item as='button' onClick={logoutHandler}>Logout</NavDropdown.Item>
                       </NavDropdown>
                    ) : (
                     <LinkContainer to="/login"  className='d-flex mb-1  align-items-center'>
