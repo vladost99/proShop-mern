@@ -7,6 +7,7 @@ import Loader from 'components/Loader'
 import {Row, Col, Form, Button} from 'react-bootstrap'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 import useStore from 'hooks/useStore'
+import { useForm } from "react-hook-form";
 
 const RegisterScreen = () => {
   const {userStore} = useStore();
@@ -14,26 +15,14 @@ const RegisterScreen = () => {
 
    const history = useHistory();
    const location = useLocation(); 
-
-   const email = useInput('');
-   const password = useInput('');
-   const comfirmPassword = useInput('');
-   const name = useInput('');
-   const message = useInput(null);
+   const {register, handleSubmit,getValues, formState: {errors}} = useForm(); 
 
    const {userInfo, error, loading} = userStore;
 
     const redirect = location.search ? location.search.split('=')[1] : '/';
 
-    const submitHandler = (e) => {
-        e.preventDefault();
-
-        if(password.value !== comfirmPassword.value) {
-            message.setValue('Passwords do not match');
-        }
-        else {
-            userStore.register({email: email.value, password: password.value, name: name.value})
-        }
+    const submitHandler = (data) => {
+        userStore.register({email: data.email, password: data.password, name: data.name});
     }
 
     useEffect(() => {
@@ -44,49 +33,51 @@ const RegisterScreen = () => {
 
   return (
     <FormContainer>
-    <h1>Sign In</h1>
+    <h1>Register</h1>
     {error && <Message variant='danger'>{error}</Message>}
-    {message.value && <Message variant='danger'>{message.value}</Message>}
+    {/* {message.value && <Message variant='danger'>{message.value}</Message>} */}
     {loading && <Loader/>}
-     <Form onSubmit={submitHandler}>
+     <Form onSubmit={handleSubmit(submitHandler)}>
 
      <Form.Group controlId='name'>
+       {errors.name && errors.name.type === 'required' && <Message variant='danger' >Name is required</Message>}
              <Form.Label>Name</Form.Label>
              <Form.Control 
                type='text'
                placeholder='Enter name'
-               value={name.value}
-               onChange={name.hanlder}
+               {...register('name', { required: true })}
                ></Form.Control>
      </Form.Group>
 
           <Form.Group controlId='email'>
+          {errors.email && errors.email.type === 'required' && <Message variant='danger' >Email is required</Message>}
+          {errors.email && errors.email.type === 'pattern' && <Message variant='danger' >Email invalid</Message>}
              <Form.Label>Email Address</Form.Label>
              <Form.Control 
                type='email'
                placeholder='Enter email'
-               value={email.value}
-               onChange={email.hanlder}
+               {...register('email', { required: true, pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g })}
                ></Form.Control>
           </Form.Group>
 
           <Form.Group controlId='password'>
+          {errors.password && errors.password.type === 'required' && <Message variant='danger' >Password is required</Message>}
              <Form.Label>Password</Form.Label>
              <Form.Control 
                type='password'
                placeholder='Enter password'
-               value={password.value}
-               onChange={password.hanlder}
+               {...register('password', { required: true })}
                ></Form.Control>
           </Form.Group>
 
           <Form.Group controlId='confirmPassword'>
+          {errors.comfirmPassword && errors.comfirmPassword.type === 'required' && <Message variant='danger' >Comfirm Password is required</Message>}
+          {errors.comfirmPassword && errors.comfirmPassword.type === 'validate' && <Message variant='danger' >Confirmed password does not match</Message>}
              <Form.Label>Comfirm Password</Form.Label>
              <Form.Control 
                type='password'
                placeholder='Enter confirm password'
-               value={comfirmPassword.value}
-               onChange={comfirmPassword.hanlder}
+               {...register('comfirmPassword', { required: true, validate: (value) => value === getValues('password') })}
                ></Form.Control>
           </Form.Group>
 

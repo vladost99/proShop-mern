@@ -84,7 +84,11 @@ function App() {
                   <ProfileScreen/>
               </PrivateRoute>
               
-              <Route path='/orders/:id' component={OrderScreen}  />
+
+              <PrivateRoute path='/orders/:id' >
+                  <OrderScreen/>
+              </PrivateRoute>
+
               <Route path='/register' component={RegisterScreen}/>
               <Route path='/product/:id' component={ProductScreen} />
               <Route path='/cart/:id?' component={CartScreen}  />

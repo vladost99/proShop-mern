@@ -8,9 +8,9 @@ import { observer } from 'mobx-react-lite'
 import Loader from 'components/Loader'
 import Message from 'components/Message'
 import useStore from 'hooks/useStore'
-import useInput  from 'hooks/useInput';
 import Meta from 'components/Meta';
 import NotFound from 'components/NotFound';
+import { useForm } from "react-hook-form";
 
 const ProductScreen = () => {
 
@@ -19,8 +19,9 @@ const ProductScreen = () => {
   const {id} = useParams();
   const navigate = useHistory()
   const [qty, setQty] = useState(0);
-  const rating = useInput(0);
-  const comment = useInput('');
+
+  const {register,reset, handleSubmit, formState: {errors}} = useForm(); 
+ 
   
 
   useEffect(() => {
@@ -37,11 +38,10 @@ const ProductScreen = () => {
   const {userInfo} = userStore;
 
 
-  const submitHandler = e => {
-      e.preventDefault();
+  const submitHandler = data => {
       reviewsStore.createProductReview({
-          rating: rating.value,
-          comment: comment.value,
+           rating: Number(data.rating),
+           comment: data.comment,
           _id: id
       })
   }
@@ -49,8 +49,7 @@ const ProductScreen = () => {
   useEffect(() => {
     if(success) {
       alert('Review Submitted');
-      rating.setValue(0);
-      comment.setValue('');
+      reset({rating: 1, comment: ''})
       productStore.getDetailProduct(id);
     }
   }, [success])
@@ -154,10 +153,12 @@ const ProductScreen = () => {
                               <h2>Write a Customer Review</h2>
                               {errorRev && <Message variant='danger'>{errorRev}</Message>}
                               {userInfo ? (
-                              <Form onSubmit={submitHandler}>
+                              <Form onSubmit={handleSubmit(submitHandler)}>
                                   <Form.Group controlId='rating'>
+                                      {errors.rating && errors.rating.type === 'required' && <Message variant='danger'>Rating is required</Message>}
+                                      {errors.rating && errors.rating.type === 'min' && <Message variant='danger'>The rating must be at least 1</Message>}
                                       <Form.Label>Rating</Form.Label>
-                                      <Form.Control as='select' value={rating.value} onChange={rating.hanlder}>
+                                      <Form.Control as='select' {...register('rating', {required: true, min: 1})}>
                                           <option value=''>Select...</option>
                                           <option value='1'>1 - Poor</option>
                                           <option value='2'>2 - Fair</option>
@@ -167,10 +168,11 @@ const ProductScreen = () => {
                                       </Form.Control>
                                   </Form.Group>
                                   <Form.Group className='mt-3' controlId='comment'>
+                                      {errors.comment && errors.comment.type === 'required' && <Message variant='danger'>Comment is required</Message>}
                                       <Form.Label>Comment</Form.Label>
-                                      <Form.Control row='3' value={comment.value} onChange={comment.hanlder} as='textarea'></Form.Control> 
+                                      <Form.Control row='3'{...register('comment', {required: true})} as='textarea'></Form.Control> 
                                   </Form.Group>
-                                  <Button disabled={rating.value === 0 || comment.value === ''} className='mt-3' type='submit' variant='primary'>Submit</Button>
+                                  <Button  className='mt-3' type='submit' variant='primary'>Submit</Button>
                               </Form>
                               )
                                : <Message>Please <Link to='/login'>sign in</Link> to write a review</Message>}
