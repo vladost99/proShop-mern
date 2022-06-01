@@ -1,4 +1,4 @@
-module.exports = class ApiError extends Error {
+class ProductError extends Error {
     status;
     errors;
 
@@ -6,18 +6,22 @@ module.exports = class ApiError extends Error {
         super(message);
         this.status = status;
         this.errors = errors;
+        this.message = message;
     }
 
     static productsNotFound() {
-        return new ApiError(404, 'Product items not found');
+        return new ProductError(404, 'Product items not found');
     }
 
     static productNotFound() {
-        return new ApiError(404, 'Product not found');
+        return new ProductError(404, 'Product not found');
     }
 
     static productAlreadyReview() {
-        return new ApiError(400, 'Product already reviewed');
+        return new ProductError(400, 'Product already reviewed');
     }
 
 }
+
+
+module.exports = ProductError;
