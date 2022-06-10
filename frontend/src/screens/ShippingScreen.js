@@ -1,26 +1,32 @@
-import useInput from 'hooks/useInput';
 import React from 'react';
 import FormContainer from 'components/FormContainer'
 import { useHistory } from 'react-router-dom';
 import { Button, Form } from 'react-bootstrap';
 import { observer } from 'mobx-react-lite';
-//import  cartStore  from 'store/cart';
 import CheckoutSteps from 'components/CheckoutSteps';
 import useStore from 'hooks/useStore';
-
+import { useForm } from "react-hook-form";
+import Message from 'components/Message';
+import { useEffect } from 'react';
 
 const ShippingScreen = () => {
   const {cartStore} = useStore();
   const {shippingAddress} = cartStore;  
   const history = useHistory();
-  const address = useInput(shippingAddress.address  || '');
-  const city = useInput( shippingAddress.city || '');
-  const postalCode = useInput(shippingAddress.postalCode || '');
-  const country = useInput(shippingAddress.country ||  ''); 
+  const {register, handleSubmit,reset, formState: {errors}} = useForm(); 
 
-  const handleSubmit = (e) => {
-      e.preventDefault();
-      cartStore.saveShippingAddress({ address: address.value,city: city.value,postalCode: postalCode.value,country: country.value });
+ 
+ useEffect(() => {
+   reset({
+     address:shippingAddress.address  || '',
+     city: shippingAddress.city || '',
+     country: shippingAddress.country ||  '',
+     postalCode: shippingAddress.postalCode || ''
+   })
+ }, [])
+
+  const submitHandler = data => {
+      cartStore.saveShippingAddress({ address: data.address,city: data.city,postalCode: data.postalCode,country: data.country });
       history.push('/payment');
   }
   
@@ -28,50 +34,47 @@ const ShippingScreen = () => {
    <FormContainer>
        <CheckoutSteps step1 step2  />
        <h1>Shipping</h1>
-       <Form onSubmit={handleSubmit}>
+       <Form onSubmit={handleSubmit(submitHandler)}>
        
           <Form.Group controlId='address'>
+             {errors.address && errors.address.type === 'required' && <Message variant='danger'>Address is required</Message>}
               <Form.Label>Address</Form.Label>
               <Form.Control
                 type='address'
                 placeholder='Enter address'
-                value={address.value}
-                onChange={address.hanlder}
-                required
+                {...register('address', {required: true})}
               ></Form.Control>
           </Form.Group>
 
           <Form.Group controlId='city'>
+          {errors.city && errors.city.type === 'required' && <Message variant='danger'>City is required</Message>}
               <Form.Label>City</Form.Label>
               <Form.Control
                 type='text'
                 placeholder='Enter City'
-                value={city.value}
-                onChange={city.hanlder}
-                required
+                {...register('city', {required: true})}
               ></Form.Control>
           </Form.Group>
 
 
           <Form.Group controlId='postalCode'>
+          {errors.postalCode && errors.postalCode.type === 'pattern' && <Message variant='danger'>Postal code should have only numbers</Message>}
+          {errors.postalCode && errors.postalCode.type === 'required' && <Message variant='danger'>Postal code is required</Message>}
               <Form.Label>Postal Code</Form.Label>
               <Form.Control
-                type='text'
+                type='number'
                 placeholder='Enter postal code'
-                value={postalCode.value}
-                onChange={postalCode.hanlder}
-                required
+                {...register('postalCode', {required: true, pattern: /^\d+$/})}
               ></Form.Control>
           </Form.Group>
 
           <Form.Group controlId='country'>
+          {errors.country && errors.country.type === 'required' && <Message variant='danger'>Country is required</Message>}
               <Form.Label>Country</Form.Label>
               <Form.Control
                 type='text'
                 placeholder='Enter country'
-                value={country.value}
-                onChange={country.hanlder}
-                required
+                {...register('country', {required: true})}
               ></Form.Control>
           </Form.Group>
 
